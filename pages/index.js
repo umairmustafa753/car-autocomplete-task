@@ -62,27 +62,31 @@ const AutocompleteComponent = () => {
   };
 
   const fetchSuggestions = async (value) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cars?carName=${value}`,
-        {
-          headers: {
-            "X-Api-Key": "h3BNQofhLGmO0fgHvcXEPQ==1xWsTuePQoG9csrg",
-          },
-        }
-      );
-      const uniqueData = [
-        ...new Map(response.data.map((item) => [item.CarName, item])).values(),
-      ];
-      setSuggestions(uniqueData);
-      setResponse(response.data);
-      setMaxPrice(0);
-      setMinPrice(0);
-      setLoading(false);
-    } catch (error) {
-      setSuggestions([]);
-      setLoading(false);
+    if (value.length >= 1) {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/cars?carName=${value}`,
+          {
+            headers: {
+              "X-Api-Key": "h3BNQofhLGmO0fgHvcXEPQ==1xWsTuePQoG9csrg",
+            },
+          }
+        );
+        const uniqueData = [
+          ...new Map(
+            response.data.map((item) => [item.CarName, item])
+          ).values(),
+        ];
+        setSuggestions(uniqueData);
+        setResponse(response.data);
+        setMaxPrice(0);
+        setMinPrice(0);
+        setLoading(false);
+      } catch (error) {
+        setSuggestions([]);
+        setLoading(false);
+      }
     }
   };
 
