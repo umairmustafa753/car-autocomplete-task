@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 
 const AutocompleteComponent = () => {
-  const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [response, setResponse] = useState([]);
   const [filteredCars, setFilteredCars] = useState([]);
@@ -22,25 +21,27 @@ const AutocompleteComponent = () => {
   const [year, setYear] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isFilterApply, setFilterApply] = useState(false);
+  const [priceError, setPriceError] = useState("");
 
   const handleInputChange = (event) => {
     const value = event.target.value;
-    setInputValue(value);
     fetchSuggestions(value);
   };
 
   const handleSelectOption = (event, car) => {
-    setInputValue(car.CarName);
     const filterCars = response.filter((item) => {
       return item.CarName === car.CarName;
     });
     setFilteredCars(filterCars);
     setSuggestions(filterCars);
     setResponse([]);
-    setFilterApply(true);
   };
 
   const handleFilter = () => {
+    if (Number(maxPrice) < Number(minPrice)) {
+      setPriceError("Max price cannot be less than min price");
+      return;
+    }
     const filteredAndPriced = suggestions.filter((car) => {
       if (year > 0) {
         return (
@@ -56,13 +57,15 @@ const AutocompleteComponent = () => {
       }
     });
     setFilteredCars(filteredAndPriced);
+    setFilterApply(true);
+    setPriceError("");
   };
 
   const fetchSuggestions = async (value) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/cars?carName=${value}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cars?carName=${value}`,
         {
           headers: {
             "X-Api-Key": "h3BNQofhLGmO0fgHvcXEPQ==1xWsTuePQoG9csrg",
@@ -105,7 +108,7 @@ const AutocompleteComponent = () => {
           />
         )}
         onChange={handleSelectOption}
-        style={{ marginBottom: "1rem" }}
+        style={{ marginBottom: "1rem", marginTop: "1rem" }}
       />
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
         <TextField
@@ -148,6 +151,11 @@ const AutocompleteComponent = () => {
           </Button>
         ) : null}
       </div>
+      {priceError && (
+        <Typography variant="body2" color="error">
+          {priceError}
+        </Typography>
+      )}
       {filteredCars.length === 0 ? (
         <Typography
           variant="body1"
