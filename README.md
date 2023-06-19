@@ -1,6 +1,6 @@
 ### Project Overview.
 
-The Project target is to get the records of cars according to the user input text. Show Car Name, year and price to end user.
+The Project target is to get the records of cars according to the user input text. Show the car Name, year and price to the end user.
 
 ### Project Task Perfrom.
 
