@@ -1,11 +1,9 @@
-import { readCSV } from "../../helper/readCSV";
+const cars = require("../../cars.json");
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   const { carName } = req.query;
 
   try {
-    const cars = await readCSV("cars.csv");
-
     const matchingCars = cars.filter((car) =>
       car.CarName.toLowerCase().includes(carName.toLowerCase())
     );
