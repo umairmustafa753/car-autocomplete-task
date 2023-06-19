@@ -99,7 +99,7 @@ const AutocompleteComponent = () => {
       <Autocomplete
         loading={loading}
         options={suggestions}
-        getOptionLabel={(car) => `${car.CarName} - ${car.price}`}
+        getOptionLabel={(car) => `${car.CarName}`}
         renderInput={(params) => (
           <TextField
             {...params}
