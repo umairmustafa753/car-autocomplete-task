@@ -6,6 +6,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.13.5",
+    "axios": "^1.4.0",
     "csv-parser": "^3.0.0",
     "next": "latest",
     "react": "18.2.0",

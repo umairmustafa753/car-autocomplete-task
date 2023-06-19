@@ -1,115 +1,182 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  TextField,
+  Autocomplete,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Typography,
+} from "@mui/material";
 
-export default function Home() {
+const AutocompleteComponent = () => {
+  const [inputValue, setInputValue] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [response, setResponse] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [year, setYear] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [isFilterApply, setFilterApply] = useState(false);
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setInputValue(value);
+    fetchSuggestions(value);
+  };
+
+  const handleSelectOption = (event, car) => {
+    setInputValue(car.CarName);
+    const filterCars = response.filter((item) => {
+      return item.CarName === car.CarName;
+    });
+    setFilteredCars(filterCars);
+    setSuggestions(filterCars);
+    setResponse([]);
+    setFilterApply(true);
+  };
+
+  const handleFilter = () => {
+    const filteredAndPriced = suggestions.filter((car) => {
+      if (year > 0) {
+        return (
+          Number(car.price) >= Number(minPrice) &&
+          Number(car.price) <= Number(maxPrice) &&
+          Number(car.year) === Number(year)
+        );
+      } else {
+        return (
+          Number(car.price) >= Number(minPrice) &&
+          Number(car.price) <= Number(maxPrice)
+        );
+      }
+    });
+    setFilteredCars(filteredAndPriced);
+  };
+
+  const fetchSuggestions = async (value) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/cars?carName=${value}`,
+        {
+          headers: {
+            "X-Api-Key": "h3BNQofhLGmO0fgHvcXEPQ==1xWsTuePQoG9csrg",
+          },
+        }
+      );
+      const uniqueData = [
+        ...new Map(response.data.map((item) => [item.CarName, item])).values(),
+      ];
+      setSuggestions(uniqueData);
+      setResponse(response.data);
+      setMaxPrice(0);
+      setMinPrice(0);
+      setLoading(false);
+    } catch (error) {
+      setSuggestions([]);
+      setLoading(false);
+    }
+  };
+
+  const clearFilter = () => {
+    setMaxPrice(0);
+    setMinPrice(0);
+    setYear(0);
+    setFilteredCars(suggestions);
+    setFilterApply(false);
+  };
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div>
+      <Autocomplete
+        loading={loading}
+        options={suggestions}
+        getOptionLabel={(car) => `${car.CarName} - ${car.price}`}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Car Model"
+            onChange={handleInputChange}
+          />
+        )}
+        onChange={handleSelectOption}
+        style={{ marginBottom: "1rem" }}
+      />
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+        <TextField
+          label="Min Price"
+          value={minPrice}
+          type="number"
+          onChange={(e) => setMinPrice(e.target.value)}
+          style={{ flexGrow: 1, minWidth: 0 }}
+        />
+        <TextField
+          label="Max Price"
+          type="number"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          style={{ flexGrow: 1, minWidth: 0 }}
+        />
+        <TextField
+          label="Year"
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          style={{ flexGrow: 1, minWidth: 0 }}
+        />
+        <Button
+          variant="contained"
+          onClick={handleFilter}
+          disabled={!minPrice && !maxPrice}
+          style={{ flexGrow: 1, minWidth: 0 }}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        footer img {
-          margin-left: 0.5rem;
-        }
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-decoration: none;
-          color: inherit;
-        }
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+          Filter
+        </Button>
+        {isFilterApply ? (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={clearFilter}
+            style={{ flexGrow: 1, minWidth: 0 }}
+          >
+            Clear Filter
+          </Button>
+        ) : null}
+      </div>
+      {filteredCars.length === 0 ? (
+        <Typography
+          variant="body1"
+          sx={{ marginTop: "1rem", textAlign: "center" }}
+        >
+          No data found.
+        </Typography>
+      ) : (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Year</TableCell>
+              <TableCell>Price</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredCars.map((car, index) => (
+              <TableRow key={index}>
+                <TableCell>{car.CarName}</TableCell>
+                <TableCell>{car.year}</TableCell>
+                <TableCell>{car.price}$</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
-  )
-}
+  );
+};
+
+export default AutocompleteComponent;
