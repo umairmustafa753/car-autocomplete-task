@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { carName } = req.query;
 
   try {
-    const cars = await readCSV("docs/cars.csv");z
+    const cars = await readCSV("./docs/cars.csv");
 
     const matchingCars = cars.filter((car) =>
       car.CarName.toLowerCase().includes(carName.toLowerCase())
