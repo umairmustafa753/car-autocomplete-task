@@ -62,7 +62,7 @@ const AutocompleteComponent = () => {
   };
 
   const fetchSuggestions = async (value) => {
-    if (value.length >= 1) {
+    if (value.length >= 2) {
       setLoading(true);
       try {
         const response = await axios.get(
