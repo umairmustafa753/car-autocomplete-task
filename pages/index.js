@@ -171,9 +171,11 @@ const AutocompleteComponent = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Year</TableCell>
-              <TableCell>Price</TableCell>
+              <TableCell>Car Name</TableCell>
+              <TableCell>Car Year</TableCell>
+              <TableCell>Car Price</TableCell>
+              <TableCell>Car Fuel Type</TableCell>
+              <TableCell>Car Door</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -182,6 +184,8 @@ const AutocompleteComponent = () => {
                 <TableCell>{car.CarName}</TableCell>
                 <TableCell>{car.year}</TableCell>
                 <TableCell>{car.price}$</TableCell>
+                <TableCell>{car.fueltype}</TableCell>
+                <TableCell>{car.doornumber}</TableCell>
               </TableRow>
             ))}
           </TableBody>
