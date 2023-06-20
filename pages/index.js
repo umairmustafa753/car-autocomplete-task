@@ -107,7 +107,7 @@ const AutocompleteComponent = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Car Model"
+            label="Car Name"
             onChange={handleInputChange}
           />
         )}
