@@ -12,4 +12,5 @@ The Project target is to get the records of cars according to the user input tex
 ### To Run the Project Locally
 
 1. Run npm install
-2. Run npm run dev.
+2. Add .env according to the example env
+3. Run npm run dev.
